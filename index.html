@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Escape Page</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: white;
+      background:
+        radial-gradient(circle at center, rgba(30, 30, 30, 0.95), rgba(0, 0, 0, 1) 70%),
+        linear-gradient(90deg, rgba(255, 0, 0, 0.25), rgba(0, 0, 255, 0.25));
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .lights {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .beam {
+      position: absolute;
+      top: -20%;
+      width: 55vw;
+      height: 140vh;
+      filter: blur(50px);
+      opacity: 0.55;
+      transform: rotate(12deg);
+      mix-blend-mode: screen;
+      animation-duration: 1.2s;
+      animation-iteration-count: infinite;
+      animation-timing-function: ease-in-out;
+    }
+
+    .beam.red {
+      left: -10%;
+      background: linear-gradient(90deg, rgba(255, 30, 30, 0.95), rgba(255, 30, 30, 0.08));
+      animation-name: redPulse;
+    }
+
+    .beam.blue {
+      right: -10%;
+      background: linear-gradient(270deg, rgba(0, 110, 255, 0.95), rgba(0, 110, 255, 0.08));
+      animation-name: bluePulse;
+      transform: rotate(-12deg);
+    }
+
+    .lightbar {
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(460px, 90vw);
+      height: 34px;
+      border-radius: 999px;
+      background: rgba(20, 20, 20, 0.9);
+      border: 2px solid rgba(255, 255, 255, 0.12);
+      overflow: hidden;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.08);
+      z-index: 2;
+    }
+
+    .lightbar::before,
+    .lightbar::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      width: 50%;
+      height: 100%;
+    }
+
+    .lightbar::before {
+      left: 0;
+      background: rgba(255, 0, 0, 0.95);
+      animation: barRed 0.5s infinite steps(1);
+      box-shadow: 0 0 25px rgba(255, 0, 0, 0.95);
+    }
+
+    .lightbar::after {
+      right: 0;
+      background: rgba(0, 110, 255, 0.95);
+      animation: barBlue 0.5s infinite steps(1);
+      box-shadow: 0 0 25px rgba(0, 110, 255, 0.95);
+    }
+
+    .content {
+      position: relative;
+      z-index: 3;
+      width: min(900px, 100%);
+      background: rgba(10, 10, 10, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      padding: 40px 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      text-align: center;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-shadow: 0 0 18px rgba(255, 255, 255, 0.22);
+    }
+
+    p {
+      margin: 0 auto 28px;
+      max-width: 760px;
+      line-height: 1.75;
+      font-size: clamp(1rem, 2vw, 1.15rem);
+      color: rgba(255, 255, 255, 0.94);
+    }
+
+    form {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+    }
+
+    input[type="text"] {
+      width: min(620px, 100%);
+      padding: 16px 18px;
+      border-radius: 14px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.08);
+      color: white;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    input[type="text"]::placeholder {
+      color: rgba(255, 255, 255, 0.58);
+    }
+
+    input[type="text"]:focus {
+      border-color: rgba(255, 255, 255, 0.45);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    button {
+      padding: 16px 24px;
+      border: none;
+      border-radius: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: white;
+      background: linear-gradient(90deg, #c80000, #005eff);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.42);
+    }
+
+    .note {
+      margin-top: 14px;
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.72);
+    }
+
+    @keyframes redPulse {
+      0%, 24%, 50%, 100% { opacity: 0.08; }
+      10%, 20% { opacity: 0.72; }
+      60%, 70% { opacity: 0.18; }
+    }
+
+    @keyframes bluePulse {
+      0%, 49%, 76%, 100% { opacity: 0.08; }
+      52%, 66% { opacity: 0.74; }
+      82%, 92% { opacity: 0.2; }
+    }
+
+    @keyframes barRed {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0.15; }
+    }
+
+    @keyframes barBlue {
+      0%, 49% { opacity: 0.15; }
+      50%, 100% { opacity: 1; }
+    }
+
+    @media (max-width: 640px) {
+      .content {
+        padding: 28px 18px;
+      }
+
+      form {
+        flex-direction: column;
+      }
+
+      input[type="text"],
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="lights" aria-hidden="true">
+    <div class="beam red"></div>
+    <div class="beam blue"></div>
+  </div>
+  <div class="lightbar" aria-hidden="true"></div>
+
+  <main class="content">
+    <h1>Escape</h1>
+    <p>
+      You escaped and the cops have apprehended the suspect. They took the suspect before you saw who it was but the suspect dropped a paper and left you a hint as to who they were. On the paper was a link. You decide to enter the link:
+    </p>
+
+    <form id="linkForm">
+      <input
+        id="linkInput"
+        type="text"
+        placeholder="Enter the link here"
+        autocomplete="off"
+        spellcheck="false"
+      />
+      <button type="submit">Go</button>
+    </form>
+
+          <div class="note" style="margin-top:24px;">
+      <span style="color:#9ecbff; user-select: all;">
+        https://www.facebook.com/spencer.smith.625027
+      </span>
+    </div>
+  </main>
+
+  <script>
+    const form = document.getElementById('linkForm');
+    const input = document.getElementById('linkInput');
+
+    form.addEventListener('submit', function (event) {
+      event.preventDefault();
+
+      let value = input.value.trim();
+      if (!value) return;
+
+      // Automatically add https if missing
+      if (!value.startsWith('http://') && !value.startsWith('https://')) {
+        value = 'https://' + value;
+      }
+
+      // Redirect to the entered link
+      try {
+        window.open(value, '_self');
+      } catch (e) {
+        window.location.href = value;
+      }
+    });
+  </script>
+</body>
+</html>
