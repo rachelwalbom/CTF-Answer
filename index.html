@@ -231,45 +231,16 @@
       You escaped and the cops have apprehended the suspect. They took the suspect before you saw who it was but the suspect dropped a paper and left you a hint as to who they were. On the paper was a link. You decide to enter the link:
     </p>
 
-    <form id="linkForm">
-      <input
-        id="linkInput"
-        type="text"
-        placeholder="Enter the link here"
-        autocomplete="off"
-        spellcheck="false"
-      />
-      <button type="submit">Go</button>
-    </form>
+    <button id="goButton">Go</button>
 
-          <div class="note" style="margin-top:24px;">
-      <span style="color:#9ecbff; user-select: all;">
-        https://www.facebook.com/spencer.smith.625027
-      </span>
-    </div>
+          
   </main>
 
   <script>
-    const form = document.getElementById('linkForm');
-    const input = document.getElementById('linkInput');
+    const button = document.getElementById('goButton');
 
-    form.addEventListener('submit', function (event) {
-      event.preventDefault();
-
-      let value = input.value.trim();
-      if (!value) return;
-
-      // Automatically add https if missing
-      if (!value.startsWith('http://') && !value.startsWith('https://')) {
-        value = 'https://' + value;
-      }
-
-      // Redirect to the entered link
-      try {
-        window.open(value, '_self');
-      } catch (e) {
-        window.location.href = value;
-      }
+    button.addEventListener('click', function () {
+      window.location.href = 'https://www.facebook.com/spencer.smith.625027';
     });
   </script>
 </body>
